@@ -1,8 +1,8 @@
-# Vibe Coding Skills
+# fastDDD
 
-구조화된 AI 기반 개발을 위한 재사용 가능한 워크플로우 스킬 모음.
+FastAPI + DDD 기반 백엔드 개발을 위한 AI 에이전트 스킬팩.
 
-피처 계획, 구현, 리팩토링, 코드 리뷰, API 명세 작성, 에러코드 정의, 문서 배포 등 반복되는 개발 워크플로우를 스킬로 관리한다.
+PRD 작성부터 기능 구현, 리팩토링, API 명세, 에러코드, 문서 배포까지 — 반복되는 개발 워크플로우를 스킬로 패키지화했다.
 
 ## 핵심 개념
 
@@ -42,28 +42,35 @@ your-project/
 
 ## 빠른 시작
 
-### Claude Code
+### 설치 (Bootstrap)
 
 ```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/isak-kang/fastddd/main/scripts/bootstrap.sh)"
+```
+
+### 수동 설치
+
+```bash
+# Claude Code
 ./scripts/sync-to-claude.sh /path/to/your-project
-```
 
-### Codex
-
-```bash
-./scripts/sync-to-codex.sh /path/to/your-project
-```
-
-### Cursor
-
-```bash
+# Cursor
 ./scripts/sync-to-cursor.sh /path/to/your-project
+
+# Codex
+./scripts/sync-to-codex.sh /path/to/your-project
+
+# 전체
+./scripts/sync-all.sh /path/to/your-project
 ```
 
-### 전체
+### 커맨드 호출 (Claude Code)
 
 ```bash
-./scripts/sync-all.sh /path/to/your-project
+/fastddd:plan-feature    # PRD 작성
+/fastddd:implement-feature  # 기능 구현
+/fastddd:plan-refactoring   # 리팩토링 계획
+/fastddd:write-api-spec     # API 명세 작성
 ```
 
 ## 원칙
