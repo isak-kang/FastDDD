@@ -1,0 +1,18 @@
+---
+description: DDD 템플릿 기능 계획 및 구현 워크플로우
+globs:
+  - "**/*.py"
+  - "docs/features/**/*.md"
+alwaysApply: false
+---
+
+# Feature Workflow
+
+기능을 구현할 때:
+
+1. PRD가 있는 경우 `plan-feature` skill부터 시작한다.
+2. PRD 범위 밖의 기능을 구현하지 않는다.
+3. 구현은 `implement-feature` skill과 `AGENTS.md`의 레이어 규칙을 따른다.
+4. API가 변경되는 경우 코드 작성 전에 API 컨트랙트를 정의한다.
+5. 비즈니스 로직은 테스트 우선으로 작성하는 것을 선호한다.
+6. 비동기 작업, 외부 호출, 장시간 실행 태스크에 대한 가시성을 추가한다.

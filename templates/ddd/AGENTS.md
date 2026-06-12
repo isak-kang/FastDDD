@@ -1,0 +1,204 @@
+# FastAPI DDD 템플릿 — 개발 가이드
+
+이 템플릿은 FastAPI + DDD + Clean Architecture 기반 백엔드 프로젝트 시작점이다. 비즈니스 로직은 도메인 중심으로 작성하고, 계층 간 의존성 방향을 지킨다.
+
+## 핵심 원칙
+
+- 복잡하거나 요구사항이 불명확한 작업은 구현 전에 Problem 1-Pager를 먼저 작성한다.
+- 한 번에 하나의 기능, 하나의 bounded context 단위로 작게 변경한다.
+- 비즈니스 규칙은 `app/domain/`에 둔다.
+- 유스케이스 조합은 `app/application/`에 둔다.
+- FastAPI 라우터와 요청/응답 스키마는 `app/presentation/`에 둔다.
+- DB, 외부 API, 캐시, 스토리지 구현은 `app/infrastructure/`에 둔다.
+- 공통 응답, 에러, 로깅, 유틸은 `app/shared/`에 둔다.
+
+## 의존성 방향
+
+```text
+presentation -> application -> domain
+infrastructure -> domain
+infrastructure -> config
+shared -> domain 의존 금지
+domain -> 다른 레이어 의존 금지
+```
+
+`domain`은 FastAPI, Pydantic settings, DB client, HTTP client 같은 외부 프레임워크에 의존하지 않는다.
+
+## 표준 구조
+
+```text
+app/
+  application/
+    service/
+  config/
+    components/
+    lifespan.py
+    shared/
+  domain/
+    {bounded_context}/
+      indexes/
+    shared/
+      enumeration/
+  infrastructure/
+    dependencies/
+    external/
+    persistence/
+    repositories/
+    scheduler/
+  presentation/
+    router/
+      api_router.py
+  shared/
+    exceptions/
+      domains/
+    logging/
+    response/
+main.py
+tests/
+```
+
+## API 응답과 에러
+
+- 성공 응답은 `app/shared/response/api_response.py`의 `ApiResponse.success()`를 사용한다.
+- 데이터가 없는 성공 응답은 `ApiResponse.no_content()`를 사용한다.
+- 실패 응답은 `ApiResponse.fail()`, `ApiResponse.request_error()`, `ApiResponse.server_error()` 형식을 유지한다.
+- 공통 에러 코드는 `app/shared/exceptions/error_code.py`의 `ErrorCode`에 추가한다.
+- 도메인별 에러 코드는 `app/shared/exceptions/domains/{domain}/error_code.py`에 `{Domain}ErrorCode` enum으로 추가한다.
+- 명시적인 API 예외는 `AppException`을 사용한다.
+- 도메인별 예외는 `app/shared/exceptions/domains/{domain}/`에 모은다.
+- 도메인별 기본 예외는 `{Domain}Error` 이름을 사용하고 `BaseAppException`을 상속한다.
+- 도메인별 `{Domain}ErrorCode` enum 값은 `(status_code, code, default_message)` 형식을 사용한다.
+- 전역 예외 핸들러와 FastAPI 등록 함수는 `app/shared/exceptions/handlers.py`에서 관리한다.
+- 앱 진입점은 `register_exception_handlers(app)`만 호출한다.
+
+## 라우터와 Lifespan
+
+- API 라우터 등록은 `app/presentation/router/api_router.py`에서 관리한다.
+- `main.py`는 `app.include_router(api_router)`만 호출한다.
+- 앱 시작/종료 스켈레톤은 `app/config/lifespan.py`에서 관리한다.
+- DB, Redis, scheduler, storage 초기화가 생기면 `lifespan`의 `_startup()`과 `_shutdown()`에 연결한다.
+- 라우터 등록은 lifespan에 두지 않는다. tier별 조건부 라우팅이 필요해질 때만 lifespan manager 패턴을 검토한다.
+
+## 외부 리소스 연동 (책임 구분)
+
+새 외부 리소스를 붙일 때는 아래 위치를 함께 고려한다.
+
+| 책임 | 위치 |
+|------|------|
+| 환경 변수·타입·기본값 | `app/config/components/{name}.py` |
+| 연결/풀/클라이언트 구현 | `app/infrastructure/persistence/` 또는 `app/infrastructure/scheduler/` |
+| 시작 시 연결·종료 시 정리 | `app/config/lifespan.py`의 `_startup()` / `_shutdown()` |
+| `Depends`로 주입 | `app/infrastructure/dependencies/` |
+| HTTP 엔드포인트 | `app/presentation/router/` + `api_router.py` |
+| 비즈니스 규칙 | `app/domain/`, `app/application/` |
+
+연결된 클라이언트는 `app.state.{resource}`에 둔다. 예: `app.state.redis`, `app.state.mongo`.
+필수 리소스 초기화가 실패하면 `app.state.ready = True`를 설정하기 전에 실패시킨다.
+준비 상태 확인이 필요하면 `health_router`에 readiness 엔드포인트를 추가한다.
+
+반복 작업은 Cursor skill을 따른다.
+
+- `add-config-component` — 설정 컴포넌트와 환경 변수 문서
+- `add-lifespan-resource` — startup/shutdown 연결과 `app.state` wiring
+- `add-api-router` — 새 API 라우터 등록
+
+## 로깅
+
+- 공통 logger는 `app/shared/logging/logger.py`의 `get_logger()`를 사용한다.
+- 앱 시작 시 `setup_logging(settings.logging.log_level)`로 루트 로거를 초기화한다.
+- 로그 레벨은 `LOG_LEVEL` 환경 변수로 제어한다.
+- 예외 핸들러는 4xx를 warning, 5xx와 예상하지 못한 예외를 error/exception으로 기록한다.
+
+## 설정 구조
+
+- 통합 설정 진입점은 `app/config/settings.py`의 `get_settings()`다.
+- 설정 컴포넌트는 `app/config/components/`에 둔다.
+- 환경 구분 enum은 `app/config/shared/environment.py`에 둔다.
+- 앱 기본 설정은 `settings.app`, 로깅 설정은 `settings.logging`으로 접근한다.
+- 새 설정 영역이 생기면 `components/{name}.py`를 추가하고 `Settings`에 명시적으로 연결한다.
+
+## 환경 변수
+
+- 환경 변수 예시는 `.env.example`에 둔다.
+- 환경 변수 설명은 `docs/environment.md`에 둔다.
+- 새 환경 변수를 추가할 때는 해당 `app/config/components/*.py`, `.env.example`, `docs/environment.md`를 함께 수정한다.
+
+성공 응답:
+
+```json
+{"status": 200, "code": "COMMON_SUCCESS", "message": "", "data": {}}
+```
+
+실패 응답:
+
+```json
+{"status": 400, "code": "AUTH_018", "message": "Auth User not found"}
+```
+
+## Bounded Context 추가 규칙
+
+새 도메인을 추가할 때는 최소한 다음 레이어를 함께 고려한다.
+
+```text
+app/domain/{context}/
+app/application/service/{context}_service.py
+app/infrastructure/repositories/{context}_repository.py
+app/infrastructure/dependencies/{context}_dependencies.py
+app/presentation/router/{context}_router.py
+tests/
+```
+
+Repository 인터페이스는 domain에, 구현체는 infrastructure에 둔다.
+
+## 인덱스 관리
+
+- 인덱스 스펙은 `app/domain/{context}/indexes/`에서 관리한다.
+- 각 도메인의 `__init__.py`에서 `*_INDEX_SPECS`로 export한다.
+- 등록은 `app/infrastructure/persistence/documentdb/index_registry.py` 같은 통합 registry에서 처리한다.
+- 개별 인프라 모듈에 ad-hoc `ensure_*_indexes` 함수를 만들지 않는다.
+
+## Python 스타일
+
+- 모듈과 함수는 snake_case를 사용한다.
+- 클래스와 Pydantic 모델은 PascalCase를 사용한다.
+- 상수와 에러 코드는 UPPER_SNAKE_CASE를 사용한다.
+- 포맷은 `black app/ tests/`, import 정리는 `isort app/ tests/`를 사용한다.
+- 요청/응답 모델은 Pydantic 모델로 명시한다.
+
+## Cursor skills
+
+반복 작업은 `.cursor/skills/`의 skill을 우선 따른다.
+
+### 개발 workflow
+
+| Skill | 용도 |
+|-------|------|
+| `plan-feature` | 기능 구현 전 PRD 작성 |
+| `implement-feature` | 승인된 PRD 기반 구현 |
+| `plan-refactoring` | 리팩토링 계획 수립 |
+| `implement-refactoring` | 외부 동작 유지하며 리팩토링 |
+| `review-code` | 코드 리뷰 |
+
+### DDD 스캐폴드·인프라
+
+| Skill | 용도 |
+|-------|------|
+| `create-bounded-context` | 새 도메인·서비스·리포지토리·라우터 스캐폴드 |
+| `add-error-code` | 도메인별 에러 코드와 예외 |
+| `add-config-component` | 설정 컴포넌트와 환경 변수 문서 |
+| `add-lifespan-resource` | startup/shutdown 연결, `app.state` wiring |
+| `add-api-router` | 새 API 라우터와 `api_router.py` 등록 |
+
+문서·명세 skill(API 명세, 에러코드 문서, 릴리즈 노트, 블로그)은 FastDDD 카탈로그 루트 `skills/`에 있으며, `--with-shared-skills`로 프로젝트에 복사할 수 있다.
+
+원칙과 책임 구분은 이 문서와 `.cursor/rules/`에, 단계별 절차는 skill에 둔다.
+
+## 실행과 테스트
+
+```bash
+uv pip install -e ".[dev]"
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+pytest
+```
+
+커밋 전에는 포맷, import 정리, 테스트를 실행한다.

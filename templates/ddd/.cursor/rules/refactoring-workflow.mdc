@@ -1,0 +1,16 @@
+---
+description: DDD 템플릿 안전한 리팩토링 워크플로우
+globs:
+  - "**/*.py"
+alwaysApply: false
+---
+
+# Refactoring Workflow
+
+리팩토링할 때:
+
+1. `plan-refactoring` skill로 계획을 먼저 작성한다.
+2. 명시적으로 요청받지 않는 한 외부 동작을 변경하지 않는다.
+3. 구조적 변경 전에 특성화 테스트를 추가하거나 확인한다.
+4. `implement-refactoring` skill에 따라 작고 되돌릴 수 있는 변경을 한다.
+5. 회귀 검증을 실행하거나 설명한다.

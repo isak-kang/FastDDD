@@ -1,0 +1,15 @@
+---
+description: FastAPI DDD 템플릿 Python API 스타일
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python API Style
+
+- 함수와 모듈은 snake_case, 클래스와 Pydantic 모델은 PascalCase를 사용한다.
+- API 성공 응답은 `ApiResponse.success()` 또는 `ApiResponse.no_content()`로 반환한다.
+- 애플리케이션 실패는 `AppException`과 `ErrorCode`로 표현한다.
+- 로깅은 `app.shared.logging.logger.get_logger()`를 사용한다.
+- 환경 변수를 추가할 때는 config component, `.env.example`, `docs/environment.md`를 함께 수정한다.
+- 라우터 함수는 명시적인 `response_model`과 반환 타입을 작성한다.
+- 포맷은 `black app/ tests/`, import 정리는 `isort app/ tests/`를 따른다.
