@@ -4,8 +4,6 @@ set -euo pipefail
 TARGET="${1:-.}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-mkdir -p "$TARGET/.agents/skills"
-
 SHARED_SKILLS=(
   write-api-spec
   write-error-code-spec
@@ -15,10 +13,15 @@ SHARED_SKILLS=(
   publish-docs
 )
 
+mkdir -p "$TARGET/.cursor/skills"
+
 for name in "${SHARED_SKILLS[@]}"; do
-  skill="$REPO_ROOT/skills/$name"
-  [ -d "$skill" ] || continue
-  rm -rf "$TARGET/.agents/skills/$name"
-  cp -R "$skill" "$TARGET/.agents/skills/$name"
+  src="$REPO_ROOT/skills/$name"
+  if [[ ! -d "$src" ]]; then
+    echo "Missing shared skill: $src" >&2
+    exit 1
+  fi
+  rm -rf "$TARGET/.cursor/skills/$name"
+  cp -R "$src" "$TARGET/.cursor/skills/$name"
   echo "Synced shared skill: $name"
 done

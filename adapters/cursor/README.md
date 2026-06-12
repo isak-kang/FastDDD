@@ -1,33 +1,24 @@
 # Cursor 어댑터
 
-Cursor는 `.cursor/rules/*.mdc` 에서 영구적인 프로젝트 규칙을 사용한다.
+## 새 프로젝트
 
-## 프로젝트 레벨 설치
-
-레포지토리 루트에서 실행:
+템플릿을 복사해 시작한다. DDD 예시:
 
 ```bash
-./scripts/sync-to-cursor.sh /path/to/your-project
+./scripts/new-from-template.sh ddd /path/to/my-backend --with-shared-skills
 ```
 
-다음과 같이 복사된다:
+템플릿에 포함된 `.cursor/rules/`와 `.cursor/skills/`가 프로젝트 규칙이다.
 
-```text
-cursor-rules/*.mdc
-→ /path/to/your-project/.cursor/rules/*.mdc
+## 기존 프로젝트에 공통 문서 skill 추가
+
+```bash
+./scripts/sync-shared-skills.sh /path/to/your-project
 ```
 
-## 권장 프로젝트 파일 구조
+API 명세, 에러코드 문서, 릴리즈 노트, 블로그 등 **스택 무관 skill**만 복사한다.
 
-```text
-your-project/
-├── AGENTS.md
-└── .cursor/
-    └── rules/
-```
+## FastDDD 카탈로그 레포 자체
 
-## 참고
-
-- 영구적인 프로젝트 규칙은 `.cursor/rules/*.mdc` 를 사용한다.
-- 워크플로우 전용 프롬프트는 `skills/` 를 소스 자료로 활용한다.
-- Cursor 규칙은 구체적이고 파일 패턴을 인식해야 한다.
+이 저장소 루트를 Cursor로 열 때는 `.cursor/rules/00-catalog.mdc`가 적용된다.
+앱 아키텍처 규칙은 `templates/{template}/` 내부에만 둔다.

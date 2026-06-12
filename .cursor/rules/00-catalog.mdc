@@ -1,0 +1,13 @@
+---
+description: FastDDD 템플릿 카탈로그 저장소 운영 규칙
+alwaysApply: true
+---
+
+# FastDDD Catalog Rules
+
+- 이 저장소는 템플릿 카탈로그다. 앱 아키텍처 규칙은 `templates/{template}/` 내부에만 둔다.
+- 편집 전에 루트 `AGENTS.md`와 대상 템플릿의 `AGENTS.md`를 읽는다.
+- 스택별 개발 workflow skill은 `templates/{template}/.cursor/skills/`에 둔다.
+- 문서·명세·블로그용 공통 skill만 루트 `skills/`에 둔다.
+- 새 프로젝트는 `scripts/new-from-template.sh`로 템플릿을 복사해 시작한다.
+- 존재하지 않는 모듈, 커맨드, 설정값을 임의로 만들지 않는다.

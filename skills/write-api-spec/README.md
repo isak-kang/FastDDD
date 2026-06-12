@@ -2,8 +2,11 @@
 
 See `SKILL.md` for the workflow definition.
 
-## Install Targets
+## Install
 
-- Claude Code: `.claude/skills/write-api-spec/`
-- Codex: `.agents/skills/write-api-spec/`
+FastDDD catalog shared skill. Copy to a project with:
+
+```bash
+./scripts/sync-shared-skills.sh /path/to/your-project
+```
 - Cursor: convert key workflow guidance into `.cursor/rules/*.mdc` when persistent project rules are needed.
