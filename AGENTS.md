@@ -19,8 +19,10 @@ FastDDD/
   README.md
   skills/                    # write-api-spec, write-error-code-spec, ...
   scripts/
+    create.sh
     new-from-template.sh
     sync-shared-skills.sh
+    bootstrap.sh
   templates/
     ddd/
       AGENTS.md
@@ -50,7 +52,7 @@ FastDDD/
 ## 새 프로젝트 생성
 
 ```bash
-./scripts/new-from-template.sh ddd /path/to/my-backend --with-shared-skills
+./scripts/create.sh ddd /path/to/my-backend --with-shared-skills
 ```
 
 ## 첫 번째 템플릿

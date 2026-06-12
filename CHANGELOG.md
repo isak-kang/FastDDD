@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added `scripts/create.sh` for curl-based project creation from GitHub
+- Added `scripts/lib/catalog-fetch.sh` for remote catalog downloads
+- Updated `bootstrap.sh` to sync skills into existing projects via curl or local repo
+
 ## 0.1.0
 
 - Initial repository scaffold

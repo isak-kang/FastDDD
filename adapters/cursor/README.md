@@ -5,7 +5,14 @@
 템플릿을 복사해 시작한다. DDD 예시:
 
 ```bash
-./scripts/new-from-template.sh ddd /path/to/my-backend --with-shared-skills
+curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/create.sh \
+  | bash -s -- ddd ./my-backend --with-shared-skills
+```
+
+카탈로그 레포를 clone한 경우:
+
+```bash
+./scripts/create.sh ddd /path/to/my-backend --with-shared-skills
 ```
 
 템플릿에 포함된 `.cursor/rules/`와 `.cursor/skills/`가 프로젝트 규칙이다.

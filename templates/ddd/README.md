@@ -47,7 +47,14 @@ pytest
 FastDDD 카탈로그에서:
 
 ```bash
-./scripts/new-from-template.sh ddd /path/to/my-backend --with-shared-skills
+curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/create.sh \
+  | bash -s -- ddd ./my-backend --with-shared-skills
+```
+
+카탈로그 레포를 clone한 경우:
+
+```bash
+./scripts/create.sh ddd /path/to/my-backend --with-shared-skills
 ```
 
 `--with-shared-skills`는 API 명세·에러코드 문서 등 공통 문서 skill을 함께 복사한다.

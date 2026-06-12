@@ -9,8 +9,10 @@ FastDDD/
   AGENTS.md                  # 카탈로그 운영 규칙
   skills/                    # 스택 무관 문서·명세 skill
   scripts/
-    new-from-template.sh     # 템플릿 복사
+    create.sh                # 새 프로젝트 생성 (curl 지원)
+    new-from-template.sh     # 로컬 카탈로그에서 템플릿 복사
     sync-shared-skills.sh    # 공통 skill을 프로젝트에 복사
+    bootstrap.sh             # 기존 프로젝트에 공통 skill 동기화
   templates/
     ddd/                     # FastAPI + DDD 백엔드 (자급자족)
       AGENTS.md
@@ -40,33 +42,54 @@ FastDDD/
 
 ## 새 프로젝트 시작
 
-```bash
-# DDD 백엔드 프로젝트 생성
-./scripts/new-from-template.sh ddd ../my-backend --with-shared-skills
+레포 clone 없이 (권장):
 
-cd ../my-backend
+```bash
+curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/create.sh \
+  | bash -s -- ddd ./my-backend --with-shared-skills
+
+cd my-backend
 cp .env.example .env
 uv pip install -e ".[dev]"
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 pytest
 ```
 
+카탈로그 레포를 이미 clone한 경우:
+
+```bash
+./scripts/create.sh ddd ../my-backend --with-shared-skills
+# 또는
+./scripts/new-from-template.sh ddd ../my-backend --with-shared-skills
+```
+
 복사된 프로젝트의 `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`가 실제 개발 규칙이다.
 
 `--with-shared-skills`는 API 명세·에러코드 문서 등 **루트 공통 skill**을 프로젝트 `.cursor/skills/`에 함께 복사한다. 생략해도 템플릿만으로 개발은 가능하다.
 
+특정 브랜치·태그에서 생성하려면 `--ref`를 붙인다:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/create.sh \
+  | bash -s -- ddd ./my-backend --with-shared-skills --ref dev
+```
+
 ## 기존 프로젝트에 공통 skill만 추가
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/bootstrap.sh \
+  | bash -s -- /path/to/your-project
+```
+
+카탈로그 레포 안에서:
+
+```bash
+./scripts/bootstrap.sh /path/to/your-project
+# Cursor skill만 필요하면
 ./scripts/sync-shared-skills.sh /path/to/your-project
 ```
 
-Claude Code / Codex용 동기화:
-
-```bash
-./scripts/sync-to-claude.sh /path/to/your-project
-./scripts/sync-to-codex.sh /path/to/your-project
-```
+Claude Code / Codex용 동기화는 `bootstrap.sh`가 함께 처리한다 (로컬·curl 모두).
 
 ## 원칙
 
