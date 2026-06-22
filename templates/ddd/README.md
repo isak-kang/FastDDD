@@ -30,7 +30,7 @@ pytest
 
 ### 개발 workflow
 
-- `plan-feature` / `implement-feature`
+- `start-feature` — 기능 착수 문서 작성 및 구현
 - `plan-refactoring` / `implement-refactoring`
 - `review-code`
 

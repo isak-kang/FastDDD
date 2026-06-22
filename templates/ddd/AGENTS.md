@@ -4,7 +4,7 @@
 
 ## 핵심 원칙
 
-- 복잡하거나 요구사항이 불명확한 작업은 구현 전에 Problem 1-Pager를 먼저 작성한다.
+- 복잡하거나 요구사항이 불명확한 작업은 구현 전에 `start-feature` skill로 kickoff 문서(또는 Problem 1-Pager)를 먼저 작성한다.
 - 한 번에 하나의 기능, 하나의 bounded context 단위로 작게 변경한다.
 - 비즈니스 규칙은 `app/domain/`에 둔다.
 - 유스케이스 조합은 `app/application/`에 둔다.
@@ -247,8 +247,7 @@ service는 repository **port**에만 의존한다. impl, DB client, `app.state`�
 
 | Skill | 용도 |
 |-------|------|
-| `plan-feature` | 기능 구현 전 PRD 작성 |
-| `implement-feature` | 승인된 PRD 기반 구현 |
+| `start-feature` | 기능 착수 문서 작성 및 합의된 범위 구현 |
 | `plan-refactoring` | 리팩토링 계획 수립 |
 | `implement-refactoring` | 외부 동작 유지하며 리팩토링 |
 | `review-code` | 코드 리뷰 |

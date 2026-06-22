@@ -38,7 +38,7 @@ FastDDD/
 | `review-docs` | 문서 일관성 검토 |
 | `publish-docs` | 외부 문서 배포 준비 |
 
-개발 workflow skill(PRD, 구현, 리팩토링, 코드 리뷰)은 **템플릿 내부**에 둔다. 예: `templates/ddd/.cursor/skills/plan-feature`.
+개발 workflow skill(기능 착수, 리팩토링, 코드 리뷰)은 **템플릿 내부**에 둔다. 예: `templates/ddd/.cursor/skills/start-feature`.
 
 ## 새 프로젝트 시작
 
