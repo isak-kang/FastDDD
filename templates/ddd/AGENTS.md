@@ -248,8 +248,7 @@ service는 repository **port**에만 의존한다. impl, DB client, `app.state`�
 | Skill | 용도 |
 |-------|------|
 | `start-feature` | 기능 착수 문서 작성 및 합의된 범위 구현 |
-| `plan-refactoring` | 리팩토링 계획 수립 |
-| `implement-refactoring` | 외부 동작 유지하며 리팩토링 |
+| `start-refactoring` | 리팩토링 착수 문서 작성 및 외부 동작 유지 실행 |
 | `review-code` | 코드 리뷰 |
 
 ### DDD 스캐폴드·인프라

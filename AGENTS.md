@@ -36,7 +36,7 @@ FastDDD/
 
 | 내용 | 위치 |
 |------|------|
-| DDD 개발 workflow (start-feature, 리팩토링, 코드 리뷰) | `templates/ddd/.cursor/skills/` |
+| DDD 개발 workflow (start-feature, start-refactoring, 코드 리뷰) | `templates/ddd/.cursor/skills/` |
 | DDD 아키텍처 규칙 | `templates/ddd/.cursor/rules/`, `templates/ddd/AGENTS.md` |
 | bounded context, lifespan, router 추가 절차 | `templates/ddd/.cursor/skills/` |
 | API 명세, 에러코드 문서, 릴리즈 노트, 블로그 | 루트 `skills/` |

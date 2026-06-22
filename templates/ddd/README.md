@@ -31,7 +31,7 @@ pytest
 ### 개발 workflow
 
 - `start-feature` — 기능 착수 문서 작성 및 구현
-- `plan-refactoring` / `implement-refactoring`
+- `start-refactoring` — 리팩토링 착수 문서 작성 및 실행
 - `review-code`
 
 ### DDD 스캐폴드·인프라
