@@ -1,24 +1,35 @@
 ---
 name: add-api-router
-description: Registers a new FastAPI router in the DDD template. Use when adding HTTP endpoints, mounting a domain router, or exposing a new API resource under /api.
+description: FastAPI DDD 템플릿에 API router를 등록한다. HTTP 엔드포인트 추가, domain router 마운트, /api 하위 리소스 노출 시 사용한다.
 ---
 
-# Add API Router
+# API Router 추가 (Add API Router)
 
-## Workflow
+## 목적
 
-1. Read `AGENTS.md`, `app/presentation/router/api_router.py`, and an existing router such as `health_router.py`.
-2. Choose a snake_case router module name, such as `{context}_router.py`.
-3. Create `app/presentation/router/{context}_router.py`.
-4. Define `router = APIRouter(tags=["{context}"])` and add route handlers.
-5. Return responses with `ApiResponse.success()`, `ApiResponse.no_content()`, or raise `AppException` / domain errors.
-6. Keep handlers thin: delegate business logic to `app/application/service/`.
-7. Register the router in `app/presentation/router/api_router.py` with `include_router`.
-8. Add request/response Pydantic models in the router file or a dedicated schema module under `app/presentation/` when they grow.
-9. Add focused tests under `tests/`.
-10. Run lints or focused import checks for changed files.
+새 FastAPI router 모듈을 만들고 `api_router.py`에 등록한다.
 
-## Example
+## 필요한 입력
+
+- AGENTS.md
+- `app/presentation/router/api_router.py`
+- 참고용 기존 router (예: `health_router.py`)
+- context 이름 (snake_case, 예: `order`)
+
+## 진행 순서
+
+1. `AGENTS.md`, `app/presentation/router/api_router.py`, 기존 router(예: `health_router.py`)를 읽는다.
+2. router 모듈 이름을 snake_case로 정한다 (예: `{context}_router.py`).
+3. `app/presentation/router/{context}_router.py`를 생성한다.
+4. `router = APIRouter(tags=["{context}"])`를 정의하고 route handler를 추가한다.
+5. `ApiResponse.success()`, `ApiResponse.no_content()`로 응답하거나 `AppException` / domain error를 raise한다.
+6. handler는 얇게 유지하고 비즈니스 로직은 `app/application/service/`에 위임한다.
+7. `app/presentation/router/api_router.py`에서 `include_router`로 등록한다.
+8. request/response Pydantic model이 커지면 router 파일 또는 `app/presentation/` 아래 schema 모듈로 분리한다.
+9. `tests/`에 focused test를 추가한다.
+10. 변경 파일에 대해 lint 또는 import 검사를 실행한다.
+
+## 예시
 
 `app/presentation/router/user_router.py`:
 
@@ -39,15 +50,15 @@ from app.presentation.router.user_router import router as user_router
 api_router.include_router(user_router)
 ```
 
-## Rules
+## 규칙
 
-- Register routers only in `api_router.py`, not in `main.py` or `lifespan.py`.
-- Do not put business rules in route handlers.
-- Do not let routers import DB or Redis clients directly; use application services and `Depends`.
-- Use the `/api` prefix from `api_router`; add resource-specific `prefix` on child routers when needed.
-- Prefer `ApiResponse` for success and mapped exceptions for failures.
+- router 등록은 `api_router.py`에서만 한다. `main.py`나 `lifespan.py`에 등록하지 않는다.
+- route handler에 비즈니스 규칙을 두지 않는다.
+- router가 DB나 Redis client를 직접 import하지 않게 한다. application service와 `Depends`를 사용한다.
+- `/api` prefix는 `api_router`에서 처리한다. resource별 `prefix`는 child router에 둔다.
+- 성공 응답은 `ApiResponse`, 실패는 매핑된 exception을 사용한다.
 
-## Related Skills
+## 관련 skill
 
-- `create-bounded-context` — full domain, service, repository, and router scaffold
-- `add-lifespan-resource` — when endpoints depend on startup-initialized clients
+- `create-bounded-context` — domain, service, repository, router 전체 스캐폴드
+- `add-lifespan-resource` — startup에서 초기화된 client에 endpoint가 의존할 때
