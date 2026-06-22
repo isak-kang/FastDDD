@@ -70,11 +70,23 @@ PRD에 해당 작업이 있으면 `.cursor/skills/{skill-name}/SKILL.md`를 읽�
 - PRD에 명시되지 않은 기능을 구현하지 않는다.
 - 의존성 방향을 반드시 준수한다: `presentation → application → domain`, `infrastructure → domain`
 - router/controller는 얇게 유지한다. 비즈니스 로직을 두지 않는다.
-- 비즈니스 로직은 application/domain 레이어에만 위치한다.
 - DB 및 외부 시스템 접근은 infrastructure 레이어에만 위치한다.
 - 요청/응답 모델은 반드시 Pydantic으로 작성한다.
 - 응답은 `ApiResponse` 래퍼를 사용한다.
 - 생성, 업로드, 실행, 재시도 작업에서 멱등성을 고려한다.
+
+### Service vs Repository
+
+| 레이어 | 책임 |
+|--------|------|
+| **domain** | aggregate 규칙, 불변식, 상태 변경 |
+| **application service** | 유스케이스 조합, repository port 호출, DTO 변환 |
+| **repository port** | persistence 계약 (도메인 언어) |
+| **repository impl** | 데이터 **어떻게** 가져오고 저장할지 (쿼리, mapping) |
+
+- service는 `{Aggregate}Repository` port에만 의존한다. `{Aggregate}RepositoryImpl`, DB client, `app.state`를 import하지 않는다.
+- repository impl에 비즈니스 판단(if 재고 부족 then reject 등)을 두지 않는다. 판단은 domain 또는 service에서 한다.
+- service가 repository 메서드만 그대로 노출하는 pass-through라면, PRD상 단순 CRUD인지·domain 규칙이 빠진 것은 아닌지 확인한다.
 
 ## 네이밍 규칙
 

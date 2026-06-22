@@ -21,6 +21,9 @@ description: 요구사항, AGENTS.md, 아키텍처 규칙, 신뢰성, 테스트,
 - 코드가 AGENTS.md를 따르는가?
 - 레이어 경계가 유지되는가?
 - 비즈니스 로직이 router/controller에서 분리되어 있는가?
+- service는 repository port만 사용하고 impl/DB client를 직접 import하지 않는가?
+- repository impl에 비즈니스 판단·유스케이스 orchestration이 섞이지 않았는가?
+- aggregate 규칙은 domain에, 여러 repository를 묶는 흐름은 application service에 있는가?
 
 ### 신뢰성
 

@@ -180,6 +180,50 @@ app/infrastructure/repositories/order_repository_impl.py  # OrderRepositoryImpl
 
 구현체가 저장소별로 여러 개 필요해지면 `{tech}_{aggregate}_repository.py` 패턴(예: `mongo_order_repository.py`)으로 전환한다.
 
+### Service와 Repository 책임
+
+| 레이어 | 역할 | 하는 일 | 하지 않을 일 |
+|--------|------|---------|--------------|
+| **domain** (`{aggregate}.py`) | 도메인 규칙 | aggregate 상태 변경, 불변식·도메인 규칙 검증 | DB/HTTP 호출, 저장소 접근 |
+| **application service** (`{context}_service.py`) | 유스케이스 조합 | repository port 호출, 여러 aggregate/외부 자원 조율, 트랜잭션 경계, API DTO ↔ domain 변환 | 쿼리 작성, document mapping, 클라이언트 직접 사용 |
+| **repository port** (`{aggregate}_repository.py`) | persistence 계약 | 도메인 언어로 필요한 저장·조회 메서드 정의 | 구현, 비즈니스 판단 |
+| **repository impl** (`{aggregate}_repository_impl.py`) | persistence 구현 | **데이터를 어떻게 가져오고 저장할지** 결정 (쿼리, projection, mapping) | 비즈니스 규칙, 유스케이스 흐름 |
+
+판단 기준:
+
+- "주문 취소 가능한가?" → **domain** (`Order.cancel()`)
+- "상품 조회 후 재고 확인하고 주문 생성" → **application service**
+- "id로 Order를 persist에서 읽는다" → **repository port** (`get_by_id`)
+- "Mongo `orders` 컬렉션에서 `_id`로 find_one" → **repository impl**
+
+예시:
+
+```python
+# domain — 규칙
+class Order:
+    def cancel(self) -> None:
+        if self.status == OrderStatus.SHIPPED:
+            raise OrderError(...)
+        self.status = OrderStatus.CANCELLED
+
+# application — 유스케이스
+class OrderService:
+    async def cancel_order(self, order_id: str) -> None:
+        order = await self._order_repository.get_by_id(order_id)
+        if order is None:
+            raise OrderError(...)
+        order.cancel()
+        await self._order_repository.save(order)
+
+# infrastructure — 저장·조회 방식
+class OrderRepositoryImpl(OrderRepository):
+    async def get_by_id(self, order_id: str) -> Order | None:
+        doc = await self._collection.find_one({"_id": order_id})
+        return self._to_domain(doc) if doc else None
+```
+
+service는 repository **port**에만 의존한다. impl, DB client, `app.state`를 직접 import하지 않는다.
+
 ## 인덱스 관리
 
 - 인덱스 스펙은 `app/domain/{context}/indexes/`에서 관리한다.

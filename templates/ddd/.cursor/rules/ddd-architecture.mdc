@@ -10,7 +10,9 @@ alwaysApply: true
 - 비즈니스 규칙은 `app/domain/`에 두고, 유스케이스 조합은 `app/application/`에 둔다.
 - 라우터는 `app/presentation/router/`에 두고 공통 응답은 `ApiResponse`를 사용한다.
 - Aggregate는 `app/domain/{context}/{aggregate}.py`, Repository port는 `app/domain/{context}/repository/{aggregate}_repository.py` (`{Aggregate}Repository`)에 둔다.
-- Repository 구현체는 `app/infrastructure/repositories/{aggregate}_repository_impl.py` (`{Aggregate}RepositoryImpl`)에 둔다.
+- Repository 구현체는 `app/infrastructure/repositories/{aggregate}_repository_impl.py` (`{Aggregate}RepositoryImpl`)에 둔다. impl은 **데이터 저장·조회 방식**(쿼리, mapping)만 담당하고 비즈니스 규칙을 두지 않는다.
+- Application service는 `app/application/service/{context}_service.py`에 두고 **유스케이스·비즈니스 흐름**을 조합한다. service는 repository port만 사용하고 impl/DB client를 직접 import하지 않는다.
+- aggregate 불변식·상태 변경 규칙은 domain에 둔다. 여러 repository/aggregate를 묶는 orchestration은 application service에 둔다.
 - 설정은 `app/config/components/`에 컴포넌트로 추가하고 `settings.{component}`로 접근한다.
 - 환경 변수 추가 시 `components/*.py`, `.env.example`, `docs/environment.md`를 함께 수정한다.
 - Redis, DB, scheduler, storage 클라이언트는 `infrastructure`에 두고 `lifespan`의 `_startup`/`_shutdown`에서 연결·해제한다.
