@@ -35,7 +35,10 @@ app/
     lifespan.py
     shared/
   domain/
-    {bounded_context}/
+    {context}/
+      {aggregate}.py
+      repository/
+        {aggregate}_repository.py
       indexes/
     shared/
       enumeration/
@@ -141,14 +144,41 @@ tests/
 
 ```text
 app/domain/{context}/
+  __init__.py
+  {aggregate}.py
+  repository/
+    {aggregate}_repository.py
 app/application/service/{context}_service.py
-app/infrastructure/repositories/{context}_repository.py
+app/infrastructure/repositories/{aggregate}_repository_impl.py
 app/infrastructure/dependencies/{context}_dependencies.py
 app/presentation/router/{context}_router.py
 tests/
 ```
 
-Repository 인터페이스는 domain에, 구현체는 infrastructure에 둔다.
+### Domain 레이아웃
+
+- bounded context는 `app/domain/{context}/` 폴더로 구분한다.
+- aggregate root는 `app/domain/{context}/{aggregate}.py`에 둔다.
+- context와 aggregate 이름이 같으면 `order/order.py`처럼 경로가 반복되어도 된다.
+- aggregate가 여러 개면 `{aggregate}.py`와 `repository/{aggregate}_repository.py`를 aggregate마다 추가한다.
+- value object가 필요해지면 `value_objects/` 서브폴더를 추가한다.
+
+### Repository 네이밍
+
+| 역할 | 위치 | 클래스명 |
+|------|------|----------|
+| Port (인터페이스) | `app/domain/{context}/repository/{aggregate}_repository.py` | `{Aggregate}Repository` |
+| Adapter (구현체) | `app/infrastructure/repositories/{aggregate}_repository_impl.py` | `{Aggregate}RepositoryImpl` |
+
+예시 (`order` context):
+
+```text
+app/domain/order/order.py                          # Order aggregate
+app/domain/order/repository/order_repository.py    # OrderRepository (ABC)
+app/infrastructure/repositories/order_repository_impl.py  # OrderRepositoryImpl
+```
+
+구현체가 저장소별로 여러 개 필요해지면 `{tech}_{aggregate}_repository.py` 패턴(예: `mongo_order_repository.py`)으로 전환한다.
 
 ## 인덱스 관리
 
