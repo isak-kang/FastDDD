@@ -4,7 +4,8 @@
 
 ## 핵심 원칙
 
-- 복잡하거나 요구사항이 불명확한 작업은 구현 전에 `start-feature` skill로 kickoff 문서(또는 Problem 1-Pager)를 먼저 작성한다.
+- 복잡하거나 요구사항이 불명확한 **기능** 작업은 구현 전에 `start-feature` skill로 kickoff 문서(또는 Problem 1-Pager)를 먼저 작성한다.
+- **구조 변경·리팩토링**은 코드 수정 전에 `start-refactoring` skill로 리팩토링 문서를 먼저 작성한다.
 - 한 번에 하나의 기능, 하나의 bounded context 단위로 작게 변경한다.
 - 비즈니스 규칙은 `app/domain/`에 둔다.
 - 유스케이스 조합은 `app/application/`에 둔다.
@@ -99,11 +100,10 @@ tests/
 필수 리소스 초기화가 실패하면 `app.state.ready = True`를 설정하기 전에 실패시킨다.
 준비 상태 확인이 필요하면 `health_router`에 readiness 엔드포인트를 추가한다.
 
-반복 작업은 Cursor skill을 따른다.
+반복 작업은 `.cursor/skills/`의 skill을 따른다. 전체 목록은 아래 **Cursor skills** 절을 참고한다.
 
-- `add-config-component` — 설정 컴포넌트와 환경 변수 문서
-- `add-lifespan-resource` — startup/shutdown 연결과 `app.state` wiring
-- `add-api-router` — 새 API 라우터 등록
+- 기능·리팩토링: `start-feature`, `start-refactoring`, `review-code`
+- 스캐폴드·인프라: `create-bounded-context`, `add-error-code`, `add-config-component`, `add-lifespan-resource`, `add-api-router`
 
 ## 로깅
 
@@ -226,10 +226,15 @@ service는 repository **port**에만 의존한다. impl, DB client, `app.state`�
 
 ## 인덱스 관리
 
-- 인덱스 스펙은 `app/domain/{context}/indexes/`에서 관리한다.
-- 각 도메인의 `__init__.py`에서 `*_INDEX_SPECS`로 export한다.
-- 등록은 `app/infrastructure/persistence/documentdb/index_registry.py` 같은 통합 registry에서 처리한다.
-- 개별 인프라 모듈에 ad-hoc `ensure_*_indexes` 함수를 만들지 않는다.
+DB 등 영속 저장소를 연동할 때 적용한다. (현재 starter에는 DB가 포함되지 않는다.)
+
+- 인덱스 **스펙**(어떤 필드·조합이 필요한지)은 `app/domain/{context}/indexes/`에 둔다.
+- 인덱스 **적용**은 infrastructure에서 한곳에서 처리한다. 저장소마다 방식은 다를 수 있다.
+  - RDB(PostgreSQL, MySQL 등): migration(Alembic 등)
+  - DocumentDB(MongoDB 등): startup 시 통합 registry
+- repository·service마다 `ensure_*_indexes`를 만들지 않는다.
+
+구체 스캐폴드는 DB 종류와 함께 `add-lifespan-resource`·migration 설정 연동 시 추가한다.
 
 ## Python 스타일
 

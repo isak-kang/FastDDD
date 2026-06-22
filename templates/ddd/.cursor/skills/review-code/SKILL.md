@@ -9,6 +9,12 @@ description: 요구사항, AGENTS.md, 아키텍처 규칙, 신뢰성, 테스트,
 
 머지 또는 계속 진행 전에 코드 변경 사항을 리뷰한다.
 
+## 진행
+
+1. kickoff 문서(`docs/features/`) 또는 리팩토링 문서(`docs/refactoring/`)와 변경 범위를 대조한다.
+2. 아래 체크리스트와 `AGENTS.md`를 기준으로 리뷰한다.
+3. 필요하면 `templates/code-review-checklist.md`를 복사해 리뷰 메모를 남긴다.
+
 ## 리뷰 체크리스트
 
 ### 요구사항
@@ -61,3 +67,7 @@ description: 요구사항, AGENTS.md, 아키텍처 규칙, 신뢰성, 테스트,
 - 수정 제안
 - 테스트 누락
 - 리스크 요약
+
+## 자산
+
+- `templates/code-review-checklist.md` — 리뷰 메모 템플릿 (선택)

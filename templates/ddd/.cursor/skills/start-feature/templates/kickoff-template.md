@@ -19,7 +19,7 @@ version: "0.1.0"
 - 개발 순서: **domain → repository (port/impl) → service → router**
 - router는 제공, `api_router.py`에서 등록한다.
 - 에러는 `app/shared/exceptions/domains/{context}/`에 둔다.
-- domain 인덱스가 필요하면 `app/domain/{context}/indexes/`에 두고 통합 registry에 등록한다.
+- domain 인덱스가 필요하면 `app/domain/{context}/indexes/`에 스펙을 둔다. 적용은 infrastructure에서 일괄 처리한다 (RDB: migration, DocumentDB: startup registry 등).
 
 ---
 

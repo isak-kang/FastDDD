@@ -1,20 +1,27 @@
-# Code Review Checklist
+# 코드 리뷰 체크리스트: {변경 제목}
 
-## Requirements
+## 요구사항
 
-## Architecture
+- [ ] kickoff 문서 또는 리팩토링 문서와 일치하는가
+- [ ] 범위 밖 동작이 추가되지 않았는가
 
-## Reliability
+## 아키텍처
 
-## Data Consistency
+- [ ] AGENTS.md·레이어 규칙을 따르는가
+- [ ] service는 repository port만 사용하는가
+- [ ] repository impl에 비즈니스 판단이 없는가
 
-## Async / Performance
+## 신뢰성·데이터·테스트
 
-## Tests
+- [ ] 에러·부분 실패·멱등성이 고려되었는가
+- [ ] DTO와 영속성 모델이 분리되었는가
+- [ ] 비즈니스 규칙·실패 경로·API 컨트랙트가 검증되었는가
 
-## Maintainability
+## 유지보수성
 
-## Final Decision
+- [ ] 이름·함수 크기·중복·추상화가 적절한가
+
+## 결정
 
 - [ ] Approve
 - [ ] Request changes

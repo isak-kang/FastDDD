@@ -26,6 +26,13 @@ pytest
 
 `.env.example`을 기준으로 `.env`를 구성한다. 각 환경 변수의 의미는 `docs/environment.md`를 참고한다.
 
+## 개발 문서 경로
+
+| 용도 | 경로 | Skill |
+|------|------|-------|
+| 기능 kickoff | `docs/features/{name}.kickoff.md` | `start-feature` |
+| 리팩토링 | `docs/refactoring/{name}.refactoring.md` | `start-refactoring` |
+
 ## 템플릿 전용 skill
 
 ### 개발 workflow
