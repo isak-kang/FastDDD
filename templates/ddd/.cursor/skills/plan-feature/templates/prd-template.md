@@ -31,4 +31,16 @@ version: "0.1.0"
 
 ## 12. Done Criteria
 
-## 13. Open Questions
+## 13. Implementation Skills
+
+`implement-feature`가 참조할 레시피 skill을 표시한다. 해당 없으면 No.
+
+| Skill | Required | Notes |
+|-------|----------|-------|
+| `create-bounded-context` | Yes / No / Extend existing | |
+| `add-api-router` | Yes / No | |
+| `add-error-code` | Yes / No | |
+| `add-config-component` | Yes / No | |
+| `add-lifespan-resource` | Yes / No | config 선행 여부 |
+
+## 14. Open Questions

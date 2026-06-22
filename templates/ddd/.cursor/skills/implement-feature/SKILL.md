@@ -20,19 +20,50 @@ description: 승인된 PRD를 기반으로 기능을 구현한다. 기존 PRD �
 
 1. PRD를 먼저 읽는다.
 2. AGENTS.md를 읽고 레포지토리 규칙을 따른다.
-3. 기존 폴더 구조를 확인한다. 새 파일 위치를 임의로 결정하지 않는다.
-4. 아래 레이어 순서로 구현 계획을 수립한다:
+3. PRD의 `Implementation Skills` 섹션(또는 레이어별 영향)을 보고 필요한 레시피 skill을 식별한다.
+4. 아래 **레시피 skill 위임** 표에 해당하는 skill이 있으면, 각 skill의 `SKILL.md`를 읽고 workflow를 먼저 따른다.
+5. 기존 폴더 구조를 확인한다. 레시피 skill에 정의되지 않은 파일 위치를 임의로 결정하지 않는다.
+6. 레시피 skill 적용 순서는 일반적으로 아래와 같다:
+   - `add-config-component`
+   - `add-lifespan-resource`
+   - `create-bounded-context`
+   - `add-error-code`
+   - `add-api-router`
+7. 스캐폴드·인프라 wiring이 끝난 뒤, PRD에만 있는 비즈니스 로직·DTO·테스트를 채운다.
+8. 구현 계획을 수립할 때 레이어 순서를 따른다:
    - **domain**: 도메인 모델, Repository 인터페이스
    - **application**: 유스케이스 서비스, DTO
    - **infrastructure**: Repository 구현체, 의존성 주입
    - **presentation**: 라우터, 요청/응답 스키마
-5. 비즈니스 로직은 테스트 우선으로 작성하는 것을 선호한다.
-6. API가 변경되는 경우 `/api/{domain}/{resource}` 경로 패턴을 따른다.
-7. 한 번에 하나의 논리적 단계씩 구현한다.
-8. 여러 시스템이 관여된 경우 데이터 일관성과 부분 실패를 처리한다.
-9. 비동기 작업, 외부 호출, 장시간 실행 태스크에 대한 가시성을 추가한다.
-10. 검증 단계를 실행하거나 설명한다.
-11. 최종 구현 요약을 작성한다.
+9. 비즈니스 로직은 테스트 우선으로 작성하는 것을 선호한다.
+10. API가 변경되는 경우 `/api/{domain}/{resource}` 경로 패턴을 따른다.
+11. 한 번에 하나의 논리적 단계씩 구현한다.
+12. 여러 시스템이 관여된 경우 데이터 일관성과 부분 실패를 처리한다.
+13. 비동기 작업, 외부 호출, 장시간 실행 태스크에 대한 가시성을 추가한다.
+14. 검증 단계를 실행하거나 설명한다.
+15. 최종 구현 요약을 작성한다. 적용한 레시피 skill 목록을 포함한다.
+
+## 레시피 skill 위임
+
+PRD에 해당 작업이 있으면 `.cursor/skills/{skill-name}/SKILL.md`를 읽고 workflow를 따른다.
+레시피 skill이 파일 경로, 클래스명, 등록 위치를 이미 정의하므로 중복 규칙을 만들지 않는다.
+
+| PRD 영향 | Skill |
+|----------|-------|
+| 새 bounded context / aggregate / repository port | `create-bounded-context` |
+| HTTP 엔드포인트 추가 | `add-api-router` |
+| API 에러 코드 / 도메인 예외 | `add-error-code` |
+| 환경 변수 / 설정 컴포넌트 | `add-config-component` |
+| startup·shutdown 리소스 연결 | `add-lifespan-resource` |
+
+판단 가이드:
+
+- PRD에 `Implementation Skills`가 있으면 그 목록을 우선 따른다.
+- 없으면 PRD의 레이어별 영향을 보고 위 표에서 skill을 선택한다.
+- context 전체가 PRD scope면 `create-bounded-context`를 적용한 뒤, PRD에만 있는 유스케이스·비즈니스 규칙을 구현한다.
+- context는 있고 API만 추가하면 `add-api-router`만 적용한다.
+- `add-config-component`와 `add-lifespan-resource`가 모두 필요하면 config → lifespan 순서를 따른다.
+- 구현이 끝나면 `review-code`로 마무리 검토를 권장한다.
 
 ## 아키텍처 규칙
 
