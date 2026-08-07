@@ -13,7 +13,8 @@ Examples:
   ./scripts/new-from-template.sh ddd ../my-backend --with-shared-skills
 
 Copies templates/<template>/ to <target-dir>.
-Use --with-shared-skills to also copy stack-agnostic doc skills from the catalog root.
+Use --with-shared-skills to also copy stack-agnostic doc skills from the catalog root
+into Cursor, Claude Code, and Codex adapters.
 EOF
 }
 
@@ -65,5 +66,5 @@ cp -R "$TEMPLATE_DIR" "$TARGET"
 echo "Created project from template '$TEMPLATE' at $TARGET"
 
 if $WITH_SHARED_SKILLS; then
-  "$REPO_ROOT/scripts/sync-shared-skills.sh" "$TARGET"
+  "$REPO_ROOT/scripts/sync-all.sh" "$TARGET"
 fi

@@ -41,6 +41,7 @@ Usage:
 
 Options:
   --with-shared-skills   Copy stack-agnostic documentation skills into the project
+                          (Cursor, Claude Code, and Codex adapters)
   --ref <branch|tag>       Catalog git ref (default: ${FASTDDD_DEFAULT_REF})
   --repo <owner/name>      Catalog repository (default: ${FASTDDD_DEFAULT_REPO})
   -h, --help               Show this help
@@ -145,7 +146,7 @@ create_from_remote() {
   echo "Created project from template '$TEMPLATE' at $TARGET"
 
   if $WITH_SHARED_SKILLS; then
-    "$catalog_root/scripts/sync-shared-skills.sh" "$TARGET"
+    "$catalog_root/scripts/sync-all.sh" "$TARGET"
   fi
 }
 

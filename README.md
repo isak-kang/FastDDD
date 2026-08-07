@@ -6,18 +6,24 @@ FastDDD는 **실행 가능한 프로젝트 템플릿 카탈로그**다. 스택·
 
 ```text
 FastDDD/
-  AGENTS.md                  # 카탈로그 운영 규칙
+  AGENTS.md                  # 카탈로그 운영 규칙 (Cursor/Codex)
+  CLAUDE.md                  # 카탈로그 운영 규칙 (Claude Code)
   skills/                    # 스택 무관 문서·명세 skill
   scripts/
     create.sh                # 새 프로젝트 생성 (curl 지원)
     new-from-template.sh     # 로컬 카탈로그에서 템플릿 복사
-    sync-shared-skills.sh    # 공통 skill을 프로젝트에 복사
+    sync-all.sh              # 공통 skill을 Cursor+Claude+Codex에 모두 동기화
+    sync-shared-skills.sh    # 공통 skill을 Cursor에 복사
+    sync-to-claude.sh        # 공통 skill을 Claude Code에 복사
+    sync-to-codex.sh         # 공통 skill을 Codex에 복사
     bootstrap.sh             # 기존 프로젝트에 공통 skill 동기화
   templates/
     ddd/                     # FastAPI + DDD 백엔드 (자급자족)
       AGENTS.md
+      CLAUDE.md
       .cursor/rules/
       .cursor/skills/
+      .claude/skills/
       app/
 ```
 
@@ -63,9 +69,9 @@ pytest
 ./scripts/new-from-template.sh ddd ../my-backend --with-shared-skills
 ```
 
-복사된 프로젝트의 `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`가 실제 개발 규칙이다.
+복사된 프로젝트의 `CLAUDE.md`(Claude Code) 또는 `AGENTS.md` + `.cursor/rules/`(Cursor/Codex), 그리고 `.claude/skills/` / `.cursor/skills/`가 실제 개발 규칙이다.
 
-`--with-shared-skills`는 API 명세·에러코드 문서 등 **루트 공통 skill**을 프로젝트 `.cursor/skills/`에 함께 복사한다. 생략해도 템플릿만으로 개발은 가능하다.
+`--with-shared-skills`는 API 명세·에러코드 문서 등 **루트 공통 skill**을 프로젝트의 `.cursor/skills/`, `.claude/skills/fastddd/`, `.agents/skills/`에 모두 복사한다. 생략해도 템플릿만으로 개발은 가능하다.
 
 특정 브랜치·태그에서 생성하려면 `--ref`를 붙인다:
 
@@ -87,9 +93,11 @@ curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/boot
 ./scripts/bootstrap.sh /path/to/your-project
 # Cursor skill만 필요하면
 ./scripts/sync-shared-skills.sh /path/to/your-project
+# Claude Code skill만 필요하면
+./scripts/sync-to-claude.sh /path/to/your-project
 ```
 
-Claude Code / Codex용 동기화는 `bootstrap.sh`가 함께 처리한다 (로컬·curl 모두).
+Claude Code / Codex용 동기화는 `bootstrap.sh`(내부적으로 `sync-all.sh`)가 함께 처리한다 (로컬·curl 모두).
 
 ## 원칙
 

@@ -12,7 +12,7 @@ FastAPI + DDD + Clean Architecture 기반 백엔드 프로젝트 템플릿이다
 - 공통 `ErrorCode`, `AppException`, 전역 예외 핸들러
 - `/api/health` health check endpoint
 - pytest 기반 API 테스트
-- 템플릿 전용 `AGENTS.md`, Cursor rules, Cursor skills
+- 템플릿 전용 `AGENTS.md`/`CLAUDE.md`, Cursor rules, Cursor/Claude skills
 
 ## 실행
 
@@ -66,4 +66,4 @@ curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/crea
 
 `--with-shared-skills`는 API 명세·에러코드 문서 등 공통 문서 skill을 함께 복사한다.
 
-복사한 프로젝트에서는 이 디렉토리의 `AGENTS.md`와 `.cursor/` 설정을 개발 규칙으로 사용한다.
+복사한 프로젝트에서는 이 디렉토리의 `CLAUDE.md`(Claude Code) 또는 `AGENTS.md` + `.cursor/`(Cursor/Codex) 설정을 개발 규칙으로 사용한다.
