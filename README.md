@@ -56,9 +56,9 @@ curl -fsSL https://raw.githubusercontent.com/isak-kang/FastDDD/main/scripts/crea
 
 cd my-backend
 cp .env.example .env
-uv pip install -e ".[dev]"
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-pytest
+uv sync --extra dev
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uv run pytest
 ```
 
 카탈로그 레포를 이미 clone한 경우:

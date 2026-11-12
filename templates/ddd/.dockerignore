@@ -1,0 +1,38 @@
+# VCS / tooling
+.git
+.gitignore
+
+# Agent settings are not needed at runtime
+.claude/
+.cursor/
+.agents/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Test / coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Env & local data (never bake into the image)
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Docs are not needed at runtime
+docs/

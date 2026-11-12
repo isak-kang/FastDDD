@@ -2,14 +2,16 @@ from functools import lru_cache
 
 from app.config.components.app import AppConfig
 from app.config.components.base import BaseConfig
+from app.config.components.cors import CorsConfig
 from app.config.components.logging import LoggingConfig
 
 
 class Settings(BaseConfig):
     app: AppConfig
     logging: LoggingConfig
+    cors: CorsConfig
 
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings(app=AppConfig(), logging=LoggingConfig())
+    return Settings(app=AppConfig(), logging=LoggingConfig(), cors=CorsConfig())

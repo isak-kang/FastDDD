@@ -156,9 +156,9 @@ print_next_steps() {
 Next steps:
   cd $TARGET
   cp .env.example .env
-  uv pip install -e ".[dev]"
-  uvicorn main:app --reload --host 0.0.0.0 --port 8000
-  pytest
+  uv sync --extra dev
+  uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+  uv run pytest
 EOF
 }
 

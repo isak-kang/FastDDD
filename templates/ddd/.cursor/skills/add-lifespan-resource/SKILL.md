@@ -40,7 +40,7 @@ description: FastAPI DDD 템플릿에 외부 리소스 startup/shutdown wiring�
    - `_shutdown(app)`: startup 역순으로 client close/stop, `app.state.ready = False` 설정.
 6. FastAPI `Depends`를 쓸 때 `app/infrastructure/dependencies/`를 통해 route·service에 client를 노출한다.
 7. 필요하면 `health_router`에 `app.state` 또는 resource ping 기반 readiness endpoint를 추가한다.
-8. focused test(lifespan startup/shutdown 또는 integration test)를 추가·갱신한다.
+8. focused test(lifespan startup/shutdown 단위 테스트)를 추가·갱신한다. 실제 리소스에 연결하지 않고 가짜 client로 검증한다. 실제 인프라에 붙는 integration test는 두지 않는다(`AGENTS.md`의 테스트 규칙).
 9. 변경 파일에 대해 lint 또는 import 검사를 실행한다.
 
 ## `app.state` 규칙

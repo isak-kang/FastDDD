@@ -6,8 +6,9 @@
 |------|--------|------|
 | `APP_NAME` | `FastAPI DDD Template` | FastAPI 앱 제목과 로그에 표시되는 애플리케이션 이름 |
 | `APP_ENV` | `local` | 실행 환경. `local`, `dev`, `staging`, `prod` 중 하나 |
-| `DEBUG` | `true` | FastAPI debug 모드 활성화 여부 |
+| `DEBUG` | `true` | `settings.app.debug`로 읽을 수 있는 플래그. FastAPI 앱의 `debug`에는 연결하지 않는다 (Starlette debug 모드는 전역 예외 핸들러를 우회해 raw traceback을 반환하므로, 통일된 에러 응답 계약과 충돌한다) |
 | `LOG_LEVEL` | `INFO` | 출력할 최소 로그 레벨. `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` 중 하나 |
+| `CORS_ALLOW_ORIGINS` | (비어 있음) | 브라우저에서 이 API를 호출할 수 있는 origin 목록. **콤마로 구분**한다(예: `http://localhost:3000,https://app.example.com`). 비우면 CORS 미들웨어를 아예 붙이지 않는다 |
 
 ## LOG_LEVEL
 

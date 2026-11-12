@@ -30,10 +30,16 @@ class ApiResponse(BaseModel, Generic[T]):
     @classmethod
     def no_content(
         cls,
-        status: int = 204,
+        status: int = 200,
         code: str = ErrorCode.COMMON_NO_CONTENT.value,
         message: str = "",
     ) -> "ApiResponse[None]":
+        """Successful response carrying no data.
+
+        Uses HTTP 200 with an empty ``data`` field, not 204: this envelope is a
+        response body, and HTTP 204 must not have one. For a true bodyless
+        response, return ``fastapi.Response(status_code=204)`` instead.
+        """
         return cls(status=status, code=code, message=message)
 
     @classmethod
@@ -64,4 +70,5 @@ class ApiResponse(BaseModel, Generic[T]):
         return cls(status=status, code=code, message=message)
 
     def to_dict(self) -> dict[str, Any]:
-        return self.model_dump(mode="json", exclude_none=True)
+        """Serialize the envelope, always keeping ``data`` (null when absent)."""
+        return self.model_dump(mode="json")

@@ -56,6 +56,7 @@ app/
     exceptions/
       domains/
     logging/
+    middleware/
     response/
 main.py
 tests/
@@ -64,7 +65,8 @@ tests/
 ## API 응답과 에러
 
 - 성공 응답은 `app/shared/response/api_response.py`의 `ApiResponse.success()`를 사용한다.
-- 데이터가 없는 성공 응답은 `ApiResponse.no_content()`를 사용한다.
+- 데이터가 없는 성공 응답은 `ApiResponse.no_content()`를 사용한다. 이 응답은 HTTP 200 + `data: null`이다. HTTP 204는 본문을 가질 수 없으므로 envelope와 함께 쓰지 않는다. 본문 없는 204가 필요하면 `Response(status_code=204)`를 반환한다.
+- 응답 envelope는 성공·실패 모두 `data` 키를 항상 포함한다. 값이 없으면 `null`이다.
 - 실패 응답은 `ApiResponse.fail()`, `ApiResponse.request_error()`, `ApiResponse.server_error()` 형식을 유지한다.
 - 공통 에러 코드는 `app/shared/exceptions/error_code.py`의 `ErrorCode`에 추가한다.
 - 도메인별 에러 코드는 `app/shared/exceptions/domains/{domain}/error_code.py`에 `{Domain}ErrorCode` enum으로 추가한다.
@@ -74,11 +76,15 @@ tests/
 - 도메인별 `{Domain}ErrorCode` enum 값은 `(status_code, code, default_message)` 형식을 사용한다.
 - 전역 예외 핸들러와 FastAPI 등록 함수는 `app/shared/exceptions/handlers.py`에서 관리한다.
 - 앱 진입점은 `register_exception_handlers(app)`만 호출한다.
+- `FastAPI(debug=...)`를 켜지 않는다. Starlette debug 모드는 처리되지 않은 예외에 raw traceback을 반환해 전역 예외 핸들러와 통일된 에러 응답을 우회한다. `DEBUG` 환경 변수는 `settings.app.debug`로만 읽는다.
 
 ## 라우터와 Lifespan
 
 - API 라우터 등록은 `app/presentation/router/api_router.py`에서 관리한다.
 - `main.py`는 `app.include_router(api_router)`만 호출한다.
+- 공통 HTTP 미들웨어 구현은 `app/shared/middleware/`에 두고, 등록은 `main.py`의 `create_app()`에서 한다.
+  - `ProcessTimeMiddleware`: 모든 응답에 서버 처리시간 헤더 `X-Process-Time-Ms`를 붙인다.
+  - CORS: `CORS_ALLOW_ORIGINS`에 origin이 있을 때만 `CORSMiddleware`를 붙인다. 비우면 붙이지 않는다.
 - 앱 시작/종료 스켈레톤은 `app/config/lifespan.py`에서 관리한다.
 - DB, Redis, scheduler, storage 초기화가 생기면 `lifespan`의 `_startup()`과 `_shutdown()`에 연결한다.
 - 라우터 등록은 lifespan에 두지 않는다. tier별 조건부 라우팅이 필요해질 때만 lifespan manager 패턴을 검토한다.
@@ -117,7 +123,7 @@ tests/
 - 통합 설정 진입점은 `app/config/settings.py`의 `get_settings()`다.
 - 설정 컴포넌트는 `app/config/components/`에 둔다.
 - 환경 구분 enum은 `app/config/shared/environment.py`에 둔다.
-- 앱 기본 설정은 `settings.app`, 로깅 설정은 `settings.logging`으로 접근한다.
+- 앱 기본 설정은 `settings.app`, 로깅 설정은 `settings.logging`, CORS 설정은 `settings.cors`로 접근한다.
 - 새 설정 영역이 생기면 `components/{name}.py`를 추가하고 `Settings`에 명시적으로 연결한다.
 
 ## 환경 변수
@@ -135,7 +141,7 @@ tests/
 실패 응답:
 
 ```json
-{"status": 400, "code": "AUTH_018", "message": "Auth User not found"}
+{"status": 400, "code": "AUTH_018", "message": "Auth User not found", "data": null}
 ```
 
 ## Bounded Context 추가 규칙
@@ -270,12 +276,30 @@ DB 등 영속 저장소를 연동할 때 적용한다. (현재 starter에는 DB�
 
 원칙과 책임 구분은 이 문서와 `.cursor/rules/`에, 단계별 절차는 skill에 둔다.
 
+## 테스트 규칙
+
+- 테스트는 **실제 인프라(DB, 캐시, 스토리지)와 외부 서비스(외부 API, LLM 등)를 호출하지 않는다.** 그런 테스트(integration 테스트)는 두지 않는다.
+- `tests/conftest.py`가 모든 테스트에서 TCP 연결을 막는다. 실수로 외부에 붙으려는 테스트는 `NetworkAccessError`로 실패한다.
+- API 테스트는 `TestClient(create_app())`를 `with` 없이 쓴다. `with` 없이 쓰면 lifespan이 돌지 않으므로 외부 클라이언트가 연결되지 않는다.
+- 라우트가 쓰는 의존성은 `app.dependency_overrides`로 가짜를 주입한다. 서비스는 진짜를 쓰고 그 뒤의 포트(repository, 외부 클라이언트)만 가짜로 바꿔 라우터와 서비스의 연결까지 검증한다.
+- 여러 테스트가 쓰는 가짜 객체는 `tests/fakes.py`에 모은다.
+- 외부 HTTP 어댑터는 `httpx.MockTransport`로 응답을 흉내 내서 검증한다.
+- `pytest.ini`는 `--strict-markers`를 쓴다. 등록되지 않은 마크는 에러다.
+
 ## 실행과 테스트
 
 ```bash
-uv pip install -e ".[dev]"
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-pytest
+uv sync --extra dev
+cp .env.example .env
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uv run pytest   # 인프라·외부 서비스 없이 돈다
+```
+
+컨테이너로 실행할 때:
+
+```bash
+docker build -t my-backend .
+docker run --rm -p 8000:8000 --env-file .env my-backend
 ```
 
 커밋 전에는 포맷, import 정리, 테스트를 실행한다.

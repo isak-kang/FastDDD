@@ -39,7 +39,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
     response = ApiResponse.fail(
         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        code=ErrorCode.INTERNAL_SERVER_ERROR.value,
+        code=ErrorCode.COMMON_INTERNAL_SERVER_ERROR.value,
         message="Internal server error.",
     )
     return JSONResponse(

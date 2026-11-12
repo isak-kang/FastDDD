@@ -8,18 +8,45 @@ FastAPI + DDD + Clean Architecture 기반 백엔드 프로젝트 템플릿이다
 - `app/domain`, `app/application`, `app/infrastructure`, `app/presentation`, `app/shared` 레이어
 - 컴포넌트 기반 `app/config` 설정 구조
 - router registry와 lifespan 스켈레톤
-- 공통 `ApiResponse` 응답 모델
+- 공통 `ApiResponse` 응답 모델 (`data`는 항상 포함, 없으면 `null`)
 - 공통 `ErrorCode`, `AppException`, 전역 예외 핸들러
+- 응답 처리시간 헤더 `X-Process-Time-Ms` 미들웨어
+- 환경 변수(`CORS_ALLOW_ORIGINS`)로 켜는 CORS 설정
 - `/api/health` health check endpoint
-- pytest 기반 API 테스트
+- pytest 기반 API 테스트와 테스트 중 네트워크 연결 차단 가드
+- `Dockerfile`, `.dockerignore`, `.gitignore`
 - 템플릿 전용 `AGENTS.md`/`CLAUDE.md`, Cursor rules, Cursor/Claude skills
 
 ## 실행
 
 ```bash
-uv pip install -e ".[dev]"
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-pytest
+uv sync --extra dev
+cp .env.example .env
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uv run pytest
+```
+
+컨테이너로 실행할 때:
+
+```bash
+docker build -t my-backend .
+docker run --rm -p 8000:8000 --env-file .env my-backend
+```
+
+## 테스트
+
+테스트는 DB, 캐시, 스토리지나 외부 API 없이 돈다. `tests/conftest.py`가 테스트 중 TCP 연결을 막으므로, 실수로 외부에 붙으려는 테스트는 `NetworkAccessError`로 실패한다. 의존성은 `app.dependency_overrides`와 가짜 객체로 대신한다.
+
+## API 응답 형식
+
+모든 응답은 같은 envelope를 쓴다. `data`는 항상 포함되며, 값이 없으면 `null`이다.
+
+```json
+{"status": 200, "code": "COMMON_SUCCESS", "message": "", "data": {}}
+```
+
+```json
+{"status": 404, "code": "NOT_FOUND", "message": "Resource not found.", "data": null}
 ```
 
 ## 환경 변수
